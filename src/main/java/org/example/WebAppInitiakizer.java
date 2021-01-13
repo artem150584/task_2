@@ -1,5 +1,6 @@
 package org.example;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -10,13 +11,17 @@ import javax.servlet.ServletRegistration;
 
 public class WebAppInitiakizer implements WebApplicationInitializer {
 
+    Logger logger = Logger.getLogger(WebAppInitiakizer.class);
+
     @Override
     public void onStartup(javax.servlet.ServletContext servletContext) throws ServletException {
 
+        logger.info("loading app config");
         XmlWebApplicationContext appContext = new XmlWebApplicationContext();
         appContext.setConfigLocation("classpath:app-config.xml");
         servletContext.addListener(new ContextLoaderListener(appContext));
 
+        logger.info("loading web config");
         XmlWebApplicationContext webContext = new XmlWebApplicationContext();
         webContext.setConfigLocation("classpath:web-config.xml");
 
@@ -25,7 +30,6 @@ public class WebAppInitiakizer implements WebApplicationInitializer {
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
-
-
+        logger.info("dispatcher ready");
     }
 }
