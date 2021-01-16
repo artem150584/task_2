@@ -1,6 +1,5 @@
 package org.example.web.controllers;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.log4j.Logger;
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
@@ -39,10 +38,17 @@ public class BookShelfController {
     }
 
     @PostMapping("/save")
-    public String saveBook(Book book) {
-        bookService.saveBook(book);
-        logger.info("Current repository contents: " + bookService.getAllBooks().size());
-        return "redirect:/books/shelf";
+    public String saveBook(@Valid Book book, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("book", book);
+            model.addAttribute("bookIdToRemove", new BookIdToRemove());
+            model.addAttribute("bookList", bookService.getAllBooks());
+            return "book_shelf";
+        } else {
+            bookService.saveBook(book);
+            logger.info("Current repository contents: " + bookService.getAllBooks().size());
+            return "redirect:/books/shelf";
+        }
     }
 
     @PostMapping("/remove")
