@@ -37,9 +37,11 @@
                 <tr>
                     <td>
                         <input type="text" placeholder="author" th:field="*{author}">
+                        <p th:if="${#fields.hasErrors()}">field author must not be empty</p>
                     </td>
                     <td>
                         <input type="text" placeholder="book_title" th:field="*{title}">
+                        <p th:if="${#fields.hasErrors()}">field title must not be empty</p>
                     </td>
                     <td>
                         <input type="text" placeholder="size (page)" th:field="*{size}">
