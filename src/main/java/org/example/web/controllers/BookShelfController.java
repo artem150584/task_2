@@ -19,6 +19,7 @@ import javax.validation.Valid;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 @Controller
 @RequestMapping(value = "books")
@@ -75,7 +76,7 @@ public class BookShelfController {
         byte[] bytes = file.getBytes();
 
         //create dir
-        String rootPath = System.getProperty("catalina.home"); //путь до папуи, содержащей файлы сервера
+        String rootPath = System.getProperty("catalina.home"); //путь до папки, содержащей файлы сервера
         File dir = new File(rootPath + File.separator + "external_uploads");
         if (dir.exists()) {
             dir.mkdir();
@@ -83,11 +84,13 @@ public class BookShelfController {
 
         //create file
         File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
-        BufferedOutputStream stream = new BufferedOutputStream((new FileOutputStream(serverFile)));
-        stream.write(bytes);
-        stream.close();
+        try(BufferedOutputStream stream = new BufferedOutputStream((new FileOutputStream(serverFile)));) {
+            stream.write(bytes);
 
-        logger.info("new file saved at: " + serverFile.getAbsolutePath());
+            logger.info("new file saved at: " + serverFile.getAbsolutePath());
+        } catch (IOException e) {
+            logger.info("File was not downloaded");
+        }
 
         return "redirect:/books/shelf";
     }
