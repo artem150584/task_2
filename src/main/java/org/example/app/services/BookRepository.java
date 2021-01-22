@@ -2,6 +2,7 @@ package org.example.app.services;
 
 import org.apache.log4j.Logger;
 import org.example.web.dto.Book;
+import org.example.web.dto.BookPattern;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -18,7 +19,7 @@ import java.util.List;
 public class BookRepository implements ProjectRepository<Book>, ApplicationContextAware {
 
     private final Logger logger = Logger.getLogger(BookRepository.class);
-//    private final List<Book> repo = new ArrayList<>();
+    //    private final List<Book> repo = new ArrayList<>();
     private ApplicationContext context;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -56,6 +57,27 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("id", bookIdToRemove);
         jdbcTemplate.update("DELETE FROM books WHERE id = :id", parameterSource);
+        logger.info("remove book completed");
+        return true;
+    }
+
+    @Override
+    public boolean removeItemsByPattern(BookPattern bookPattern) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+
+        // SQL pattern
+        String authorPattern = bookPattern.getAuthorPattern().isEmpty() ? "%" : bookPattern.getAuthorPattern();
+        String titlePattern = bookPattern.getTitlePattern().isEmpty() ? "%" : bookPattern.getTitlePattern();
+        String sizePattern = bookPattern.getSizePattern().isEmpty() ? "%" : bookPattern.getSizePattern();
+
+        parameterSource.addValue("authorPattern", authorPattern);
+        parameterSource.addValue("titlePattern", titlePattern);
+        parameterSource.addValue("sizePattern", sizePattern);
+        jdbcTemplate.update("DELETE FROM books" +
+                        "               WHERE author LIKE :authorPattern " +
+                        "               AND title LIKE :titlePattern" +
+                        "               AND CAST(size AS TEXT) LIKE :sizePattern",
+                parameterSource);
         logger.info("remove book completed");
         return true;
     }

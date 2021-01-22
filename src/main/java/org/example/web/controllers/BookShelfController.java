@@ -2,8 +2,10 @@ package org.example.web.controllers;
 
 import org.apache.log4j.Logger;
 import org.example.app.services.BookService;
+import org.example.web.config.BookValidator;
 import org.example.web.dto.Book;
 import org.example.web.dto.BookIdToRemove;
+import org.example.web.dto.BookPattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -39,6 +41,7 @@ public class BookShelfController {
         logger.info(this.toString());
         model.addAttribute("book", new Book());
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
+        model.addAttribute("bookPattern", new BookPattern());
         model.addAttribute("bookList", bookService.getAllBooks());
         return "book_shelf";
     }
@@ -48,6 +51,7 @@ public class BookShelfController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", book);
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
+            model.addAttribute("bookPattern", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
             return "book_shelf";
         } else {
@@ -58,13 +62,36 @@ public class BookShelfController {
     }
 
     @PostMapping("/remove")
-    public String removeBook(@Valid BookIdToRemove bookIdToRemove, BindingResult bindingResult, Model model) {
+    public String removeBookBiId(@Valid BookIdToRemove bookIdToRemove, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", new Book());
+            model.addAttribute("bookPattern", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
+
             return "book_shelf";
         } else {
             bookService.removeBookById(bookIdToRemove.getId());
+
+            return "redirect:/books/shelf";
+        }
+    }
+
+    @PostMapping("/remove_pattern")
+    public String removeBookByPattern(@Valid BookPattern bookPattern, BindingResult bindingResult, Model model) {
+        BookValidator bookValidator = new BookValidator();
+        bookValidator.validate(bookPattern, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("book", new Book());
+            model.addAttribute("bookIdToRemove", new BookIdToRemove());
+            model.addAttribute("bookList", bookService.getAllBooks());
+
+            model.containsAttribute("bookIdToRemove");
+            model.containsAttribute("bookPattern");
+
+            return "book_shelf";
+        } else {
+            bookService.removeBookByPattern(bookPattern);
 
             return "redirect:/books/shelf";
         }
