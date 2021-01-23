@@ -23,6 +23,10 @@ public class BookService {
         return  bookRepo.retrieveAll();
     }
 
+    public List<Book> getFilteredBooks(BookPattern bookPatternToFilter) {
+        return bookRepo.retrieveFiltered(bookPatternToFilter);
+    }
+
     public void saveBook(Book book) {
         bookRepo.store(book);
     }
@@ -34,6 +38,7 @@ public class BookService {
     public boolean removeBookByPattern(BookPattern bookPatternToRemove) {
         return bookRepo.removeItemsByPattern(bookPatternToRemove);
     }
+
 
     private void defaultInit() {
         logger.info("default INIT in book service");

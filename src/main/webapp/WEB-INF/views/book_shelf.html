@@ -92,6 +92,28 @@
             </table>
         </form>
 
+        <form method="post" th:action="@{/books/filter}" th:object="${bookPatternToFilter}">
+            <table>
+                <tr>
+                    <td>
+                        <input type="text" placeholder="author pattern" th:field="*{authorPattern}">
+                    </td>
+                    <td>
+                        <input type="text" placeholder="title pattern" th:field="*{titlePattern}">
+                    </td>
+                    <td>
+                        <input type="text" placeholder="size pattern" th:field="*{sizePattern}">
+                    </td>
+                    <td>
+                        <input type="submit" value="filter">
+                    </td>
+                    <td th:if="${#fields.hasErrors()}">
+                        <p>Patterns not found</p>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
         <form method="post" th:action="@{/books/uploadFile}" enctype="multipart/form-data">
             <table>
                 <tr>

@@ -39,6 +39,7 @@ public class BookShelfController {
         model.addAttribute("book", new Book());
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
         model.addAttribute("bookPatternToRemove", new BookPattern());
+        model.addAttribute("bookPatternToFilter", new BookPattern());
         model.addAttribute("bookList", bookService.getAllBooks());
         return "book_shelf";
     }
@@ -49,6 +50,7 @@ public class BookShelfController {
             model.addAttribute("book", book);
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
             model.addAttribute("bookPatternToRemove", new BookPattern());
+            model.addAttribute("bookPatternToFilter", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
             return "book_shelf";
         } else {
@@ -63,6 +65,7 @@ public class BookShelfController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", new Book());
             model.addAttribute("bookPatternToRemove", new BookPattern());
+            model.addAttribute("bookPatternToFilter", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
 
             return "book_shelf";
@@ -83,10 +86,8 @@ public class BookShelfController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", new Book());
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
+            model.addAttribute("bookPatternToFilter", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
-
-            model.containsAttribute("bookIdToRemove");
-            model.containsAttribute("bookPatternToRemove");
 
             return "book_shelf";
         } else {
@@ -94,6 +95,28 @@ public class BookShelfController {
 
             return "redirect:/books/shelf";
         }
+    }
+
+    @PostMapping("/filter")
+    public String filterBook(@ModelAttribute("bookPatternToFilter") @Valid BookPattern bookPatternToFilter,
+                             BindingResult bindingResult,
+                             Model model) {
+        BookValidator bookValidator = new BookValidator();
+        bookValidator.validate(bookPatternToFilter, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("bookList", bookService.getAllBooks());
+        } else {
+            model.addAttribute("bookPatternToFilter", new BookPattern());
+            model.addAttribute("bookList", bookService.getFilteredBooks(bookPatternToFilter));
+
+            logger.info("got book shelf with filter: " + bookPatternToFilter);
+        }
+        model.addAttribute("book", new Book());
+        model.addAttribute("bookIdToRemove", new BookIdToRemove());
+        model.addAttribute("bookPatternToRemove", new BookPattern());
+
+        return "book_shelf";
     }
 
     @PostMapping("/uploadFile")

@@ -43,6 +43,34 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     }
 
     @Override
+    public List<Book> retrieveFiltered(BookPattern bookPatternToFilter) {
+        // SQL pattern
+        String authorPattern = bookPatternToFilter.getAuthorPattern().isEmpty() ? "%" : bookPatternToFilter.getAuthorPattern();
+        String titlePattern = bookPatternToFilter.getTitlePattern().isEmpty() ? "%" : bookPatternToFilter.getTitlePattern();
+        String sizePattern = bookPatternToFilter.getSizePattern().isEmpty() ? "%" : bookPatternToFilter.getSizePattern();
+
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+
+        parameterSource.addValue("authorPattern", authorPattern);
+        parameterSource.addValue("titlePattern", titlePattern);
+        parameterSource.addValue("sizePattern", sizePattern);
+
+        List<Book> books = jdbcTemplate.query("SELECT * FROM books " +
+                "WHERE author LIKE :authorPattern " +
+                "AND title LIKE :titlePattern " +
+                "AND CAST(size AS TEXT) LIKE :sizePattern", parameterSource, (ResultSet rs, int rowNum) -> {
+            Book book = new Book();
+            book.setId(rs.getInt("id"));
+            book.setAuthor(rs.getString("author"));
+            book.setTitle(rs.getString("title"));
+            book.setSize(rs.getInt("size"));
+            return book;
+        });
+        return new ArrayList<>(books);
+    }
+
+
+    @Override
     public void store(Book book) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("author", book.getAuthor());
@@ -58,6 +86,7 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
         parameterSource.addValue("id", bookIdToRemove);
         jdbcTemplate.update("DELETE FROM books WHERE id = :id", parameterSource);
         logger.info("remove book completed");
+
         return true;
     }
 

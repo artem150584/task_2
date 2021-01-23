@@ -7,6 +7,8 @@ import java.util.List;
 public interface ProjectRepository<T> {
     List<T> retrieveAll();
 
+    List<T> retrieveFiltered(BookPattern bookPatternToFilter);
+
     void store(T book);
 
     boolean removeItemById(Integer bookIdToRemove);
