@@ -62,13 +62,13 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     }
 
     @Override
-    public boolean removeItemsByPattern(BookPattern bookPattern) {
+    public boolean removeItemsByPattern(BookPattern bookPatternToRemove) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
 
         // SQL pattern
-        String authorPattern = bookPattern.getAuthorPattern().isEmpty() ? "%" : bookPattern.getAuthorPattern();
-        String titlePattern = bookPattern.getTitlePattern().isEmpty() ? "%" : bookPattern.getTitlePattern();
-        String sizePattern = bookPattern.getSizePattern().isEmpty() ? "%" : bookPattern.getSizePattern();
+        String authorPattern = bookPatternToRemove.getAuthorPattern().isEmpty() ? "%" : bookPatternToRemove.getAuthorPattern();
+        String titlePattern = bookPatternToRemove.getTitlePattern().isEmpty() ? "%" : bookPatternToRemove.getTitlePattern();
+        String sizePattern = bookPatternToRemove.getSizePattern().isEmpty() ? "%" : bookPatternToRemove.getSizePattern();
 
         parameterSource.addValue("authorPattern", authorPattern);
         parameterSource.addValue("titlePattern", titlePattern);

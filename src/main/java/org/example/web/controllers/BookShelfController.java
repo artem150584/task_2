@@ -11,10 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -41,7 +38,7 @@ public class BookShelfController {
         logger.info(this.toString());
         model.addAttribute("book", new Book());
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
-        model.addAttribute("bookPattern", new BookPattern());
+        model.addAttribute("bookPatternToRemove", new BookPattern());
         model.addAttribute("bookList", bookService.getAllBooks());
         return "book_shelf";
     }
@@ -51,7 +48,7 @@ public class BookShelfController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", book);
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
-            model.addAttribute("bookPattern", new BookPattern());
+            model.addAttribute("bookPatternToRemove", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
             return "book_shelf";
         } else {
@@ -65,7 +62,7 @@ public class BookShelfController {
     public String removeBookBiId(@Valid BookIdToRemove bookIdToRemove, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", new Book());
-            model.addAttribute("bookPattern", new BookPattern());
+            model.addAttribute("bookPatternToRemove", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
 
             return "book_shelf";
@@ -77,9 +74,11 @@ public class BookShelfController {
     }
 
     @PostMapping("/remove_pattern")
-    public String removeBookByPattern(@Valid BookPattern bookPattern, BindingResult bindingResult, Model model) {
+    public String removeBookByPattern(@ModelAttribute("bookPatternToRemove") @Valid BookPattern bookPatternToRemove,
+                                      BindingResult bindingResult,
+                                      Model model) {
         BookValidator bookValidator = new BookValidator();
-        bookValidator.validate(bookPattern, bindingResult);
+        bookValidator.validate(bookPatternToRemove, bindingResult);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", new Book());
@@ -87,11 +86,11 @@ public class BookShelfController {
             model.addAttribute("bookList", bookService.getAllBooks());
 
             model.containsAttribute("bookIdToRemove");
-            model.containsAttribute("bookPattern");
+            model.containsAttribute("bookPatternToRemove");
 
             return "book_shelf";
         } else {
-            bookService.removeBookByPattern(bookPattern);
+            bookService.removeBookByPattern(bookPatternToRemove);
 
             return "redirect:/books/shelf";
         }
@@ -111,7 +110,7 @@ public class BookShelfController {
 
         //create file
         File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
-        try(BufferedOutputStream stream = new BufferedOutputStream((new FileOutputStream(serverFile)));) {
+        try (BufferedOutputStream stream = new BufferedOutputStream((new FileOutputStream(serverFile)))) {
             stream.write(bytes);
 
             logger.info("new file saved at: " + serverFile.getAbsolutePath());

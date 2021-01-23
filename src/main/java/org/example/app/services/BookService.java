@@ -31,8 +31,8 @@ public class BookService {
         return bookRepo.removeItemById(bookIdToRemove);
     }
 
-    public boolean removeBookByPattern(BookPattern bookPattern) {
-        return bookRepo.removeItemsByPattern(bookPattern);
+    public boolean removeBookByPattern(BookPattern bookPatternToRemove) {
+        return bookRepo.removeItemsByPattern(bookPatternToRemove);
     }
 
     private void defaultInit() {

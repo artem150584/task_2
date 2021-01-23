@@ -11,5 +11,5 @@ public interface ProjectRepository<T> {
 
     boolean removeItemById(Integer bookIdToRemove);
 
-    boolean removeItemsByPattern(BookPattern bookPattern);
+    boolean removeItemsByPattern(BookPattern bookPatternToRemove);
 }
