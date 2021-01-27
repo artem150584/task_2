@@ -16,10 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class BookRepository implements ProjectRepository<Book>, ApplicationContextAware {
+public class BookRepository implements ProjectRepository<Book, BookPattern>, ApplicationContextAware {
 
     private final Logger logger = Logger.getLogger(BookRepository.class);
-    //    private final List<Book> repo = new ArrayList<>();
     private ApplicationContext context;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;

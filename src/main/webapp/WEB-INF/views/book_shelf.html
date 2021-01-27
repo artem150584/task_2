@@ -16,6 +16,11 @@
             border-collapse: collapse;
         }
 
+        #FileToDownload{
+            width: 50%;
+            border-collapse: collapse;
+        }
+
         table{
             margin: 25px;
         }
@@ -139,6 +144,17 @@
                 <td th:text="${book.author}"></td>
                 <td th:text="${book.title}"></td>
                 <td th:text="${book.size}"></td>
+            </tr>
+        </table>
+
+        <table id="FileToDownloadList">
+            <tr>
+                <th>Files to download:</th>
+            </tr>
+            <tr th:each="fileToDownload : ${fileToDownloadList}">
+                <td>
+                    <a th:href="@{'http://localhost:8089/simple_mvc_war_exploded/books/download?fileName=' + ${fileToDownload.fileName}}" th:text="${fileToDownload.fileName}"> </a>
+                </td>
             </tr>
         </table>
     </div>

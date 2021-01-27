@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class BookService {
 
-    private final ProjectRepository<Book> bookRepo;
+    private final ProjectRepository<Book, BookPattern> bookRepo;
     private Logger logger = Logger.getLogger(BookService.class);
 
     @Autowired

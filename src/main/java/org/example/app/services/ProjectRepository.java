@@ -1,17 +1,15 @@
 package org.example.app.services;
 
-import org.example.web.dto.BookPattern;
-
 import java.util.List;
 
-public interface ProjectRepository<T> {
+public interface ProjectRepository<T, S> {
     List<T> retrieveAll();
 
-    List<T> retrieveFiltered(BookPattern bookPatternToFilter);
+    List<T> retrieveFiltered(S bookPatternToFilter);
 
     void store(T book);
 
     boolean removeItemById(Integer bookIdToRemove);
 
-    boolean removeItemsByPattern(BookPattern bookPatternToRemove);
+    boolean removeItemsByPattern(S bookPatternToRemove);
 }

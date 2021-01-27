@@ -2,23 +2,27 @@ package org.example.web.controllers;
 
 import org.apache.log4j.Logger;
 import org.example.app.services.BookService;
+import org.example.app.services.FileService;
 import org.example.web.config.BookValidator;
 import org.example.web.dto.Book;
 import org.example.web.dto.BookIdToRemove;
 import org.example.web.dto.BookPattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 @Controller
 @RequestMapping(value = "books")
@@ -27,11 +31,19 @@ public class BookShelfController {
 
     private Logger logger = Logger.getLogger(BookShelfController.class);
     private BookService bookService;
+    private FileService fileService;
+    // <PROJECT>\target\simple_mvc\WEB-INF\classes\files
+    private final String DIRECTORY = Paths.get(getClass().getClassLoader().getResource("/files").toURI())
+            .toFile().getAbsolutePath();
 
     @Autowired
-    public BookShelfController(BookService bookService) {
+    public BookShelfController(BookService bookService, FileService fileService) throws URISyntaxException {
         this.bookService = bookService;
+        this.fileService = fileService;
     }
+
+    @Autowired
+    private ServletContext servletContext;
 
     @GetMapping("/shelf")
     public String books(Model model) {
@@ -41,6 +53,8 @@ public class BookShelfController {
         model.addAttribute("bookPatternToRemove", new BookPattern());
         model.addAttribute("bookPatternToFilter", new BookPattern());
         model.addAttribute("bookList", bookService.getAllBooks());
+        model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
+
         return "book_shelf";
     }
 
@@ -52,6 +66,8 @@ public class BookShelfController {
             model.addAttribute("bookPatternToRemove", new BookPattern());
             model.addAttribute("bookPatternToFilter", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
+            model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
+
             return "book_shelf";
         } else {
             bookService.saveBook(book);
@@ -67,6 +83,7 @@ public class BookShelfController {
             model.addAttribute("bookPatternToRemove", new BookPattern());
             model.addAttribute("bookPatternToFilter", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
+            model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
 
             return "book_shelf";
         } else {
@@ -88,6 +105,7 @@ public class BookShelfController {
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
             model.addAttribute("bookPatternToFilter", new BookPattern());
             model.addAttribute("bookList", bookService.getAllBooks());
+            model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
 
             return "book_shelf";
         } else {
@@ -115,6 +133,7 @@ public class BookShelfController {
         model.addAttribute("book", new Book());
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
         model.addAttribute("bookPatternToRemove", new BookPattern());
+        model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
 
         return "book_shelf";
     }
@@ -142,5 +161,30 @@ public class BookShelfController {
         }
 
         return "redirect:/books/shelf";
+    }
+
+    @GetMapping("/download")
+    public void downloadFile(HttpServletResponse resonse,
+                             @RequestParam() String fileName) throws IOException {
+
+        MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext, fileName);
+
+        // target/simple-mvc/META-INF/classes/files
+        File file = new File(DIRECTORY + File.separator + fileName);
+
+        resonse.setContentType(mediaType.getType());
+        resonse.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName());
+        resonse.setContentLength((int) file.length());
+
+        BufferedInputStream inStream = new BufferedInputStream(new FileInputStream(file));
+        BufferedOutputStream outStream = new BufferedOutputStream(resonse.getOutputStream());
+
+        byte[] buffer = new byte[1024];
+        int bytesRead = 0;
+        while ((bytesRead = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, bytesRead);
+        }
+        outStream.flush();
+        inStream.close();
     }
 }
