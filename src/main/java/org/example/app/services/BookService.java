@@ -38,13 +38,4 @@ public class BookService {
     public boolean removeBookByPattern(BookPattern bookPatternToRemove) {
         return bookRepo.removeItemsByPattern(bookPatternToRemove);
     }
-
-
-    private void defaultInit() {
-        logger.info("default INIT in book service");
-    }
-
-    private void defaultDestroy() {
-        logger.info("default DESTROY in book service");
-    }
 }

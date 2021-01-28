@@ -29,12 +29,16 @@ import java.nio.file.Paths;
 @Scope("singleton")
 public class BookShelfController {
 
+    public static final String EXTERNAL_UPLOADS_FOLDER = "external_uploads";
+    private final String PROPERTY_FOR_SERVER_ROOT = "catalina.home";
+
     private Logger logger = Logger.getLogger(BookShelfController.class);
     private BookService bookService;
     private FileService fileService;
     // <PROJECT>\target\simple_mvc\WEB-INF\classes\files
     private final String DIRECTORY = Paths.get(getClass().getClassLoader().getResource("/files").toURI())
             .toFile().getAbsolutePath();
+
 
     @Autowired
     public BookShelfController(BookService bookService, FileService fileService) throws URISyntaxException {
@@ -47,13 +51,10 @@ public class BookShelfController {
 
     @GetMapping("/shelf")
     public String books(Model model) {
-        logger.info(this.toString());
         model.addAttribute("book", new Book());
-        model.addAttribute("bookIdToRemove", new BookIdToRemove());
-        model.addAttribute("bookPatternToRemove", new BookPattern());
-        model.addAttribute("bookPatternToFilter", new BookPattern());
-        model.addAttribute("bookList", bookService.getAllBooks());
-        model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
+
+        logger.info(this.toString());
+        putBookClassicParam(model);
 
         return "book_shelf";
     }
@@ -62,11 +63,7 @@ public class BookShelfController {
     public String saveBook(@Valid Book book, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", book);
-            model.addAttribute("bookIdToRemove", new BookIdToRemove());
-            model.addAttribute("bookPatternToRemove", new BookPattern());
-            model.addAttribute("bookPatternToFilter", new BookPattern());
-            model.addAttribute("bookList", bookService.getAllBooks());
-            model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
+            putBookClassicParam(model);
 
             return "book_shelf";
         } else {
@@ -144,8 +141,8 @@ public class BookShelfController {
         byte[] bytes = file.getBytes();
 
         //create dir
-        String rootPath = System.getProperty("catalina.home"); //путь до папки, содержащей файлы сервера
-        File dir = new File(rootPath + File.separator + "external_uploads");
+        String rootPath = System.getProperty(PROPERTY_FOR_SERVER_ROOT);
+        File dir = new File(rootPath + File.separator + EXTERNAL_UPLOADS_FOLDER);
         if (dir.exists()) {
             dir.mkdir();
         }
@@ -169,7 +166,6 @@ public class BookShelfController {
 
         MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext, fileName);
 
-        // target/simple-mvc/META-INF/classes/files
         File file = new File(DIRECTORY + File.separator + fileName);
 
         resonse.setContentType(mediaType.getType());
@@ -186,5 +182,13 @@ public class BookShelfController {
         }
         outStream.flush();
         inStream.close();
+    }
+
+    private void putBookClassicParam(Model model) {
+        model.addAttribute("bookIdToRemove", new BookIdToRemove());
+        model.addAttribute("bookPatternToRemove", new BookPattern());
+        model.addAttribute("bookPatternToFilter", new BookPattern());
+        model.addAttribute("bookList", bookService.getAllBooks());
+        model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
     }
 }

@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 
 public class Book {
     private Integer id;
-    @NotEmpty()
+    @NotEmpty
     private String author;
     @NotEmpty
     private String title;

@@ -20,15 +20,11 @@ public class WebAppInitiakizer implements WebApplicationInitializer {
     public void onStartup(javax.servlet.ServletContext servletContext) throws ServletException {
 
         logger.info("loading app config");
-//        XmlWebApplicationContext appContext = new XmlWebApplicationContext();
-//        appContext.setConfigLocation("classpath:app-config.xml");
         AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
         appContext.register(AppContextConfig.class);
         servletContext.addListener(new ContextLoaderListener(appContext));
 
         logger.info("loading web config");
-//        XmlWebApplicationContext webContext = new XmlWebApplicationContext();
-//        webContext.setConfigLocation("classpath:web-config.xml");
         AnnotationConfigWebApplicationContext webContext = new AnnotationConfigWebApplicationContext();
         webContext.register(WebContextConfig.class);
 

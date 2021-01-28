@@ -12,14 +12,16 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 @Configuration
-@ComponentScan(basePackages = "org.example.web") //<context:component-scan base-package="org.example.web"/>
-@EnableWebMvc // <mvc:annotation-driven/>
+@ComponentScan(basePackages = "org.example.web")
+@EnableWebMvc
 public class WebContextConfig implements WebMvcConfigurer {
+
+    public static final int MAX_UPLOAD_SIZE = 5_000_000;  //5mb
+    public static final String CLASSPATH_IMAGES = "classpath:images";
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:images");
-        //<mvc:resources mapping="/**" location="classpath:images"/>
+        registry.addResourceHandler("/**").addResourceLocations(CLASSPATH_IMAGES);
     }
 
     @Bean
@@ -53,7 +55,7 @@ public class WebContextConfig implements WebMvcConfigurer {
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(5000000); //5mb
+        multipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
         return multipartResolver;
     }
 

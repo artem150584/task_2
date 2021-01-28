@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -38,7 +37,7 @@ public class BookRepository implements ProjectRepository<Book, BookPattern>, App
             book.setSize(rs.getInt("size"));
             return book;
         });
-        return new ArrayList<>(books);
+        return books;
     }
 
     @Override
@@ -65,7 +64,7 @@ public class BookRepository implements ProjectRepository<Book, BookPattern>, App
             book.setSize(rs.getInt("size"));
             return book;
         });
-        return new ArrayList<>(books);
+        return books;
     }
 
 
@@ -113,13 +112,5 @@ public class BookRepository implements ProjectRepository<Book, BookPattern>, App
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
-    }
-
-    private void defaultInit() {
-        logger.info("default INIT in book repo bean");
-    }
-
-    private void defaultDestroy() {
-        logger.info("default DESTROY in book repo bean");
     }
 }

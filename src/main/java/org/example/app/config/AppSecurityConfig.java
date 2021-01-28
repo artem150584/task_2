@@ -11,6 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static org.example.web.config.Settings.ROOT_PASSWORD;
+import static org.example.web.config.Settings.ROOT_USER;
+
 @Configuration
 @EnableWebSecurity
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -22,8 +25,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
         logger.info("populate inmemory auth user");
         auth
                 .inMemoryAuthentication()
-                .withUser("root")
-                .password(passwordEncoder().encode("123"))
+                .withUser(ROOT_USER)
+                .password(passwordEncoder().encode(ROOT_PASSWORD))
                 .roles("USER");
     }
 

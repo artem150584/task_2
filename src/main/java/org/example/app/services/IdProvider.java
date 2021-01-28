@@ -14,32 +14,9 @@ public class IdProvider implements InitializingBean, DisposableBean, BeanPostPro
 
     Logger logger = Logger.getLogger(IdProvider.class);
 
-    public String provideId(Book book) {
-        return this.hashCode() + "_" + book.hashCode();
-    }
-
-    private void initIdProvider() {
-        logger.info("provider INIT");
-    }
-
-    private void destroyIdProvider() {
-        logger.info("provider DESTROY");
-    }
-
-    private void defaultInit() {
-        logger.info("default INIT in provider");
-
-    }
-
-    private void defaultDestroy() {
-        logger.info("default DESTROY in provider");
-
-    }
-
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.info("Provider afterPropertySet invoked");
-
     }
 
     @Override
