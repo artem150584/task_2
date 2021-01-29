@@ -11,14 +11,17 @@ import javax.sql.DataSource;
 @Configuration
 public class DbConfig {
 
+    public static final String DATABASE_NAME = "book_store";
+    public static final String SCRIPT_ENCODING = "UTF-8";
+
     @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
                 .generateUniqueName(false)
-                .setName("book_store")
+                .setName(DATABASE_NAME)
                 .setType(EmbeddedDatabaseType.H2)
                 .addDefaultScripts()
-                .setScriptEncoding("UTF-8")
+                .setScriptEncoding(SCRIPT_ENCODING)
                 .ignoreFailedDrops(true)
                 .build();
     }

@@ -76,11 +76,8 @@ public class BookShelfController {
     @PostMapping("/remove")
     public String removeBookBiId(@Valid BookIdToRemove bookIdToRemove, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("book", new Book());
             model.addAttribute("bookPatternToRemove", new BookPattern());
-            model.addAttribute("bookPatternToFilter", new BookPattern());
-            model.addAttribute("bookList", bookService.getAllBooks());
-            model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
+            putBookAfterRemovingParam(model);
 
             return "book_shelf";
         } else {
@@ -98,11 +95,8 @@ public class BookShelfController {
         bookValidator.validate(bookPatternToRemove, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("book", new Book());
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
-            model.addAttribute("bookPatternToFilter", new BookPattern());
-            model.addAttribute("bookList", bookService.getAllBooks());
-            model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
+            putBookAfterRemovingParam(model);
 
             return "book_shelf";
         } else {
@@ -187,6 +181,13 @@ public class BookShelfController {
     private void putBookClassicParam(Model model) {
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
         model.addAttribute("bookPatternToRemove", new BookPattern());
+        model.addAttribute("bookPatternToFilter", new BookPattern());
+        model.addAttribute("bookList", bookService.getAllBooks());
+        model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
+    }
+
+    private void putBookAfterRemovingParam(Model model) {
+        model.addAttribute("book", new Book());
         model.addAttribute("bookPatternToFilter", new BookPattern());
         model.addAttribute("bookList", bookService.getAllBooks());
         model.addAttribute("fileToDownloadList", fileService.getAllFiles(DIRECTORY));
